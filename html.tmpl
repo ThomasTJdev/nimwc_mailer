@@ -8,21 +8,21 @@
 #
 #proc genMailerSettings*(c: var TData): string =
 # result = ""
-
+<link rel="stylesheet" href="/css/style_admin.css" />
 <link rel="stylesheet" href="/css/mailer_private.css" />
 
-<div style="text-align: center;">
+<div id="allMailevents" class="about">
   <h1>Mailer settings</h1>
-</div>
-
-<div id="allMailevents" style="width: 300px; margin-left: auto; margin-right: auto;">
-
-  <div>----------------------------------------------------------------</div>
-  <div> Package:      $pluginTitle plugin</div>
-  <div> Author:       $pluginAuthor</div>
-  <div> Version:      $pluginVersion</div>
-  <div> Version date: $pluginVersionDate</div>
-  <div>----------------------------------------------------------------</div>
+  
+  # let (n, v, d, u) = pluginExtractDetails("mailer")
+  <div id="pluginDetails">
+    <hr>
+    <div> <b>Package:</b> ${n}</div>
+    <div> <b>Version:</b> ${v}</div>
+    <div> <b>Description:</b><br>${d}</div>
+    <div> <b>URL:</b> <a href="${u}">${u}</a></div>
+    <hr>
+  </div>
 
   <br>
   
@@ -69,11 +69,11 @@
 
 <link rel="stylesheet" href="/css/mailer_private.css" />
 
-<div style="text-align: center;">
-  <h1>All mail events</h1>
-</div>
-
 <div id="allMailevents">
+  <div style="text-align: center;">
+    <h1>All mail events</h1>
+  </div>
+
 # if c.rank in [Admin, Moderator]:
   <div style="text-align: center; margin-bottom: 20px;">
     <a href="/mailer/add" class="btn btn-secondary mailAdd">Add mail event</a>
@@ -127,11 +127,11 @@ ${genSummernote()}
 <link rel="stylesheet" href="/css/mailer_private.css" />
 <script src="/js/mailer_private.js" defer></script>
 
-<div style="text-align: center;">
-  <h1>All mail events</h1>
-</div>
-
 <div id="allMailevents">
+  <div style="text-align: center;">
+    <h1>All mail events</h1>
+  </div>
+
   <form id="mailerAdd" class="mailerForm" method="post" action="/mailer/doadd?mailid=unknown">
     <div>
       <label>Name</label>
@@ -171,11 +171,11 @@ ${genSummernote()}
 <link rel="stylesheet" href="/css/mailer_private.css" />
 <script src="/js/mailer_private.js" defer></script>
 
-<div style="text-align: center;">
-  <h1>Mail</h1>
-</div>
-
 <div id="allMailevents">
+  <div style="text-align: center;">
+    <h1>Mail</h1>
+  </div>
+
   <form id="mailerUpdate" class="mailerForm" method="post" action="/mailer/doupdate?mailid=${mailData[0]}">
     <div>
       <label>Name</label>

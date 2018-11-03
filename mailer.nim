@@ -7,7 +7,15 @@
 #
 #
 
-import strutils, os, db_sqlite, json, asyncdispatch, asyncnet, parsecfg
+import
+  asyncdispatch,
+  asyncnet,
+  db_sqlite,
+  json,
+  logging
+  os,
+  parsecfg,
+  strutils,
 
 
 from times import epochTime
@@ -15,22 +23,17 @@ import jester
 import ../../nimwcpkg/resources/email/email_connection
 import ../../nimwcpkg/resources/session/user_data
 import ../../nimwcpkg/resources/utils/dates
-import ../../nimwcpkg/resources/utils/logging
-
-
-const pluginTitle       = "Mailer"
-const pluginAuthor      = "Thomas T. Jarløv"
-const pluginVersion     = "0.2"
-const pluginVersionDate = "2018-05-10"
-
+import ../../nimwcpkg/resources/utils/logging_nimwc
+import ../../nimwcpkg/resources/utils/plugins
 
 proc pluginInfo() =
+  let (n, v, d, u) = pluginExtractDetails("mailer")
   echo " "
   echo "--------------------------------------------"
-  echo "  Package:      " & pluginTitle & " plugin"
-  echo "  Author:       " & pluginAuthor
-  echo "  Version:      " & pluginVersion
-  echo "  Version date: " & pluginVersionDate
+  echo "  Package:      " & n
+  echo "  Version:      " & v
+  echo "  Description:  " & d
+  echo "  URL:          " & u
   echo "--------------------------------------------"
   echo " "
 pluginInfo()
@@ -53,7 +56,7 @@ proc mailerAddMailevent*(c: var TData, db: DbConn): string =
       return ("Error Mailer plugin: Maildate has a wrong format")
 
     exec(db, sql"INSERT INTO mailer (name, status, description, author_id, maildate) VALUES (?, ?, ?, ?, ?)", name, status, description, c.userid, maildate)
-    
+
     return ("OK")
 
 
@@ -72,7 +75,7 @@ proc mailerUpdateMailevent*(c: var TData, db: DbConn): string =
       return ("Error Mailer plugin: Maildate has a wrong format")
 
     exec(db, sql"UPDATE mailer SET name = ?, status = ?, description = ?, author_id = ?, maildate = ? WHERE id = ?", name, status, description, c.userid, maildate, c.req.params["mailid"])
-    
+
     return genMailerViewMail(c, db, c.req.params["mailid"])
 
 
@@ -83,7 +86,7 @@ proc mailerTestmail*(c: var TData, db: DbConn) =
     let mail = getRow(db, sql"SELECT mailer.id, mailer.name, mailer.description, person.name FROM mailer LEFT JOIN person ON person.id = mailer.author_id WHERE mailer.id = ?", c.req.params["mailid"])
     let email = getValue(db, sql"SELECT email FROM person WHERE id = ?", c.userid)
     asyncCheck sendMailNow("Reminder: " & mail[1], mail[2], email)
-    
+
 
 
 proc mailerDelete*(c: var TData, db: DbConn) =
@@ -91,20 +94,20 @@ proc mailerDelete*(c: var TData, db: DbConn) =
 
   if c.loggedIn:
     exec(db, sql"DELETE FROM mailer WHERE id = ?", c.req.params["mailid"])
-    
+
 
 
 proc cronMailer(db: DbConn) {.async.} =
   ## Cron mail
   ## Check every nth hour if a mail is scheduled for sending
-  
-  dbg("INFO", "Mailer plugin: Cron mail is started")
+
+  info("Mailer plugin: Cron mail is started")
   while true:
     when defined(dev):
-      dbg("DEBUG", "Mailer plugin: Waiting time between cron mails is 5 minute")
+      debug("Mailer plugin: Waiting time between cron mails is 5 minute")
       await sleepAsync(60 * 5 * 1000) # 5 minutes
-      
-    when not defined(dev):  
+
+    when not defined(dev):
       await sleepAsync(43200 * 1000) # 12 hours
 
     let currentTime = toInt(epochTime())
@@ -131,8 +134,8 @@ proc mailerStart*(db: DbConn) =
   ## If there's no need for this proc, just
   ## discard it. The proc may not be removed.
 
-  dbg("INFO", "Mailer plugin: Updating database with Mailer table if not exists")
-  
+  info("Mailer plugin: Updating database with Mailer table if not exists")
+
   if not db.tryExec(sql"""
   create table if not exists mailer(
     id INTEGER primary key,
@@ -146,6 +149,6 @@ proc mailerStart*(db: DbConn) =
 
     foreign key (author_id) references person(id)
   );""", []):
-    dbg("INFO", "Mailer plugin: Mailer table created in database")
+    info("Mailer plugin: Mailer table created in database")
 
   asyncCheck cronMailer(db)
