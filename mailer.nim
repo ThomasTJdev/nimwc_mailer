@@ -15,7 +15,7 @@ import
   logging,
   os,
   parsecfg,
-  strutils,
+  strutils
 
 when defined(postgres): import db_postgres
 else:                   import db_sqlite
