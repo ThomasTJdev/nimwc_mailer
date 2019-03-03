@@ -99,16 +99,15 @@
 #     if parseInt(mail[4]) < toInt(epochTime()):
 #       color = "background: #f0f0f0; color: grey;"
 #     end if
-    <a href="/mailer/mail?mailid=${mail[0]}" class="list-group-item list-group-item-action flex-column align-items-start" style="$color">
+    <li style="$color">
       <div class="d-flex w-100 justify-content-between">
-        <h5 class="mb-1">${mail[1]}</h5>
+        <h5 class="mb-1"><a href="/mailer/mail?mailid=${mail[0]}">${mail[1]}</a></h5>
         <div style="display: grid">
             <small>Author: ${mail[6]}</small>
             <small>Modified: ${epochDate(mail[4], "YYYY-MM-DD")}</small>
           </div>
       </div>
-      <!--<p class="mb-1"></p>-->
-    </a>
+    </li>
 #   end for
   </ul>
 # end if
