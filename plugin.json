@@ -2,7 +2,7 @@
   {
     "name": "Mailer",
     "foldername": "mailer",
-    "version": "0.2",
+    "version": "0.3",
     "url": "https://github.com/ThomasTJdev/nimwc_mailer.git",
     "method": "git",
     "tags": [
